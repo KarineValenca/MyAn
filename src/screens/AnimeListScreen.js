@@ -3,10 +3,10 @@ import { FlatList, View, Text, StyleSheet } from 'react-native'
 import useResults from '../hooks/useResults'
 
 const AnimeListScreen = () => {
-    const [searchTopAnimeApi, results, errorMessage] = useResults()
+    const [searchSeasonAnimeApi, results, errorMessage] = useResults()
     return (
         <View>
-            <Text>Top Animes</Text>
+            <Text>Animes da temporada</Text>
             <FlatList
                 data={results}
                 keyExtractor={(result) => results.mal_id}

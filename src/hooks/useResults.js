@@ -14,9 +14,21 @@ export default() => {
         }
     }
 
+    const searchSeasonAnimeApi = async() => {
+        console.log("funcao chamada")
+        try {
+            const response = await jikan.get('/season/2020/winter')
+            console.log(response) 
+            setResults(response.data.anime)
+        } catch (e) {
+            setErrorMessage('Something went wrong, try again later')
+        }
+    }
+
     useEffect(() => {
-        searchTopAnimeApi()
+        //searchTopAnimeApi()
+        searchSeasonAnimeApi()
     }, [])
 
-    return [searchTopAnimeApi, results, errorMessage]
+    return [searchSeasonAnimeApi, results, errorMessage]
 }
