@@ -2,17 +2,19 @@ import React from 'react'
 import { FlatList, View, Text, StyleSheet } from 'react-native'
 import useResults from '../hooks/useResults'
 
+import ListItem from '../components/ListItem'
+
 const AnimeListScreen = () => {
     const [searchSeasonAnimeApi, results, errorMessage] = useResults()
     return (
-        <View>
-            <Text>Animes da temporada</Text>
+        <View style={styles.container}>
+            <Text style={styles.title}>Animes da temporada</Text>
             <FlatList
                 data={results}
                 keyExtractor={(result) => results.mal_id}
                 renderItem={({ item }) => {
                     return(
-                        <Text>{item.title}</Text>
+                        <ListItem item={item} />
                     )
                 }}
             />
@@ -20,6 +22,16 @@ const AnimeListScreen = () => {
     )
 }
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+    title: {
+        fontSize: 18,
+        textAlign: 'center',
+        fontWeight: 'bold',
+        margin: 10
+    },
+    container: {
+        backgroundColor: '#D8DBE2'
+    }
+})
 
 export default AnimeListScreen
