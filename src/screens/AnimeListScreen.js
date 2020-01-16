@@ -1,7 +1,6 @@
 import React from 'react'
 import { FlatList, View, Text, StyleSheet } from 'react-native'
 import useResults from '../hooks/useResults'
-
 import ListItem from '../components/ListItem'
 
 const AnimeListScreen = () => {
@@ -11,12 +10,13 @@ const AnimeListScreen = () => {
             <Text style={styles.title}>Animes da temporada</Text>
             <FlatList
                 data={results}
-                keyExtractor={(result) => results.mal_id}
+                keyExtractor={(result) => result.mal_id}
                 renderItem={({ item }) => {
                     return(
                         <ListItem item={item} />
                     )
                 }}
+                numColumns={2}
             />
         </View>
     )
@@ -30,7 +30,9 @@ const styles = StyleSheet.create({
         margin: 10
     },
     container: {
-        backgroundColor: '#D8DBE2'
+        flex: 1,
+        alignItems: 'center',
+        backgroundColor: '#FFFFFF'
     }
 })
 
