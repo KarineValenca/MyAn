@@ -1,15 +1,18 @@
-import React from 'react'
-import { View, Text, Image, StyleSheet } from 'react-native'
-import { Feather } from '@expo/vector-icons'
+import React, { useState } from 'react'
+import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native'
+import NotifyButton from './NotifyButton'
 
 
 const ListItem = ({ item }) => {
+    const changeIcon = (actualIconName) => {
+        console.log("clicked")
+    }
+
     return (
         <View style={styles.container}>
             <Text style={styles.text}>{item.title}</Text>
             <Image style={styles.image} source={{ uri: item.image_url }}/>
-            <Feather name="bell" />
-            <Text> Notifique-me </Text>
+            <NotifyButton />
         </View>
     )
 }
@@ -22,7 +25,7 @@ const styles = StyleSheet.create({
         resizeMode: 'contain',
         borderRadius: 5,
         alignSelf: 'center',
-        margin: 10
+        margin: 5,
 
     },
     container: {
@@ -37,13 +40,11 @@ const styles = StyleSheet.create({
         },
         shadowOpacity: 0.32,
         shadowRadius: 5.46,
-
         elevation: 9,
     },
     text: {
         textAlign: 'center',
-        margin: 5
-    }
+    },
 })
 
 export default ListItem
