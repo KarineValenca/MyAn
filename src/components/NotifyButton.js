@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import { Text, View, StyleSheet, TouchableOpacity} from 'react-native'
-import { Feather } from '@expo/vector-icons'
 
 const NotifyButton = () => {
     const [bell, setBell] = useState('bell')
@@ -18,8 +17,7 @@ const NotifyButton = () => {
 
     return (
         <TouchableOpacity onPress={() => changeIcon(bell)}>
-            <View style={styles.notifyView}>
-                <Feather style={{ fontSize: 17 }} name={bell} />
+            <View style={styles.notifyView}>          
                 <Text style={{ marginLeft: 5 }}> 
                     {notifyText}
                 </Text>
