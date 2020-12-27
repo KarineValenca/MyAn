@@ -1,18 +1,16 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { View, Text, Image, StyleSheet } from 'react-native'
-import NotifyButton from './NotifyButton'
-
+import AddToListButton from './AddToListButton'
 
 const ListItem = ({ item }) => {
-    const changeIcon = (actualIconName) => {
-        console.log("clicked")
-    }
-
     return (
         <View style={styles.container}>
-            <Text style={styles.text}>{item.title}</Text>
             <Image style={styles.image} source={{ uri: item.image_url }}/>
-            <NotifyButton />
+            <Text style={styles.h1}>{item.title}</Text>
+            <View style={{flexDirection:'row', flexWrap:'wrap', justifyContent: 'space-between'}}>
+                <Text style={styles.h2}>Gênero: {item.genres[0].name}</Text>
+                <AddToListButton />
+            </View>
         </View>
     )
 }
@@ -42,8 +40,14 @@ const styles = StyleSheet.create({
         shadowRadius: 5.46,
         elevation: 9,
     },
-    text: {
+    h1: {
         textAlign: 'center',
+        fontSize: 14
+    },
+    h2: {
+        textAlign: 'left',
+        fontSize: 10,
+        padding: 10,
     },
 })
 
