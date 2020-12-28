@@ -16,7 +16,7 @@ export default() => {
 
     const searchSeasonAnimeApi = async() => {
         try {
-            const response = await jikan.get('/season/2020/winter')
+            const response = await jikan.get('/season/2021/winter')
             setResults(response.data.anime)
         } catch (e) {
             setErrorMessage('Something went wrong, try again later')
