@@ -1,27 +1,54 @@
-import { createAppContainer } from 'react-navigation'
+import { createAppContainer, createSwitchNavigator } from 'react-navigation'
 import { createStackNavigator } from 'react-navigation-stack'
-import AnimeListScreen from './src/screens/AnimeListScreen' 
+import { createBottomTabNavigator } from 'react-navigation-tabs'
+
 import React from 'react'
-import { Text, View, Button } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome5'
+
+import SearchAnimeScreen from './src/screens/AnimeListScreen'
+import MyAnimeListScreen from './src/screens/MyAnimeListScreen'
+
+const searchAnimeFlow = createSwitchNavigator({
+  SearchAnime: SearchAnimeScreen,
+})
+
+searchAnimeFlow.navigationOptions = {
+  title: 'Procurar Animes',
+  tabBarIcon: ({tintColor}) => <Icon name='search' size={20} color={tintColor} />,
+  tabBarOptions: {
+    //activeTintColor: '#1B8C11',
+    //inactiveTintColor: '#9af192'
+  }
+}
+
+const myAnimeListFlow = createSwitchNavigator({
+  MyAnimeList: MyAnimeListScreen,
+})
+myAnimeListFlow.navigationOptions = {
+  title: 'Minha Lista',
+  tabBarIcon: ({tintColor}) => <Icon name='list' size={20} color={tintColor} />,
+  tabBarOptions: {
+    //activeTintColor: '#1B8C11',
+    //inactiveTintColor: '#9af192'
+  }
+}
 
 const App = () => {
-  const navigator = createStackNavigator(
+  const mainFlow = createBottomTabNavigator(
     {
-      AnimeList: AnimeListScreen
+      searchAnimeFlow,
+      myAnimeListFlow
     },
     {
-      initialRouteName: 'AnimeList',
-      defaultNavigationOptions:{
-        title: 'Lista de Animes'
-      }
+      initialRouteName: 'searchAnimeFlow',
     }
   )
 
-  const App = createAppContainer(navigator)
+  const App = createAppContainer(mainFlow)
 
   return (
-    <App ref={ navigator => {
-      navigator = navigator}} />
+    <App ref={ nav => {
+      navigator = nav}} />
   )
    
 }
