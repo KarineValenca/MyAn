@@ -1,7 +1,14 @@
-import { useEffect, useState } from 'react'
-import jikan from '../api/jikan'
+import { useEffect, useState } from 'react';
+
+import jikan from '../api/jikan';
+import { currentSeasonAnime } from '../consts/consts';
+
+const currentYear = new Date().getFullYear();
+const currentMonth = new Date().getMonth() + 1;
+const currentSeason = currentSeasonAnime(currentMonth);
 
 export default() => {
+
     const [results, setResults] = useState([])
     const [errorMessage, setErrorMessage] = useState('')
 
@@ -16,7 +23,8 @@ export default() => {
 
     const searchSeasonAnimeApi = async() => {
         try {
-            const response = await jikan.get('/season/2021/winter')
+
+            const response = await jikan.get('/season/' + currentYear + '/' + currentSeason);
             setResults(response.data.anime)
         } catch (e) {
             setErrorMessage('Something went wrong, try again later')
@@ -27,5 +35,5 @@ export default() => {
         searchSeasonAnimeApi()
     }, [])
 
-    return [searchSeasonAnimeApi, results, errorMessage]
+    return [searchSeasonAnimeApi, results, errorMessage];
 }

@@ -3,9 +3,13 @@ import { Searchbar } from 'react-native-paper';
 import { SafeAreaView, Text, View, FlatList } from 'react-native';
 import { styles } from './styleSheet';
 
+import useResults from '../../hooks/useResults';
+import ListItem from '../ListItem';
+
 const SearchbarComponent = () => {
   
 	const [search, setSearch] = useState('');
+    const [searchSeasonAnimeApi, results, errorMessage] = useResults();
   	const [filteredDataSource, setFilteredDataSource] = useState([]);
     const [masterDataSource, setMasterDataSource] = useState([]);
 
@@ -19,8 +23,8 @@ const SearchbarComponent = () => {
       	.catch((error) => {
         	console.error(error);
       	});
-  	}, []);
-
+	  }, []);
+	  
   	const searchFilterFunction = (text) => {
 	    if (text) {
 			const newData = masterDataSource.filter(
@@ -35,37 +39,32 @@ const SearchbarComponent = () => {
 			setFilteredDataSource(masterDataSource);
 			setSearch(text);
 		}
-  	};
-
-	const ItemView = ({item}) => {
-		return (
-			<Text style = { styles.itemStyle } onPress = { () => getItem(item) }>
-				{item.id}
-				{'.'}
-				{item.title.toUpperCase()}
-			</Text>
-		);
 	};
-
-  	const ItemSeparatorView = () => {
-    	return (
-	      	<View style = {{ height: 0.5, width: '100%', backgroundColor: '#C8C8C8' }} />
-    	);
-  	};
-
+	  
   	return (
 		<SafeAreaView style = {{ flex: 1 }}>
 			<View style = { styles.container }>
 				<Searchbar
-					placeholder = 'Search Here ...'
+					placeholder = 'Procure Aqui ...'
 					onChangeText={(text) => searchFilterFunction(text)}
+					value = { search }
 				/>
 				<FlatList
+					data = { results }
+					keyExtractor = {(result) => result.mal_id.toString() }
+					renderItem = {({ item }) => {
+						return(
+							<ListItem item = { item } />
+						);
+					}}
+					numColumns = { 2 }
+				/>
+				{/* <FlatList
 					data = { filteredDataSource }
 					keyExtractor = {(item, index) => index.toString()}
 					ItemSeparatorComponent = { ItemSeparatorView }
 					renderItem = { ItemView }
-				/>
+				/> */}
 			</View>
 		</SafeAreaView>
 	);

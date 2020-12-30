@@ -1,6 +1,6 @@
-import React from 'react'
-import { View, Text, Image, StyleSheet } from 'react-native'
-import AddToListButton from './AddToListButton'
+import React from 'react';
+import { View, Text, Image, StyleSheet } from 'react-native';
+import AddToListButton from './AddToListButton';
 
 const ListItem = ({ item }) => {
     return (
@@ -12,7 +12,7 @@ const ListItem = ({ item }) => {
                 <AddToListButton />
             </View>
         </View>
-    )
+    );
 }
 
 const styles = StyleSheet.create({
@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
         },
         shadowOpacity: 0.32,
         shadowRadius: 5.46,
-        elevation: 9,
+        elevation: 9
     },
     h1: {
         textAlign: 'center',
