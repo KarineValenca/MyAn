@@ -9,30 +9,24 @@ import ListItem from '../ListItem';
 const SearchbarComponent = () => {
   
 	const [search, setSearch] = useState('');
-    const [searchSeasonAnimeApi, results, errorMessage] = useResults();
-  	const [filteredDataSource, setFilteredDataSource] = useState([]);
-    const [masterDataSource, setMasterDataSource] = useState([]);
-
+	const [searchSeasonAnimeApi, results, errorMessage] = useResults();
+	const [filteredDataSource, setFilteredDataSource] = useState([]);
+	const [masterDataSource, setMasterDataSource] = useState([]);
+	
     useEffect(() => {
-		fetch('https://jsonplaceholder.typicode.com/posts')
-      	.then((response) => response.json())
-      	.then((responseJson) => {
-        	setFilteredDataSource(responseJson);
-        	setMasterDataSource(responseJson);
-      	})
-      	.catch((error) => {
-        	console.error(error);
-      	});
-	  }, []);
+		setFilteredDataSource(results);
+		setMasterDataSource(results);
+	}, []);
 	  
   	const searchFilterFunction = (text) => {
 	    if (text) {
 			const newData = masterDataSource.filter(
 				function (item) {
-				const itemData = item.title ? item.title.toUpperCase() : ''.toUpperCase();
-				const textData = text.toUpperCase();
-				return itemData.indexOf(textData) > -1;
-			});
+					const itemData = item.title ? item.title.toUpperCase() : ''.toUpperCase();
+					const textData = text.toUpperCase();
+					return itemData.indexOf(textData) > -1;
+				}
+			);
 			setFilteredDataSource(newData);
 			setSearch(text);
 		} else {
@@ -40,7 +34,7 @@ const SearchbarComponent = () => {
 			setSearch(text);
 		}
 	};
-	  
+
   	return (
 		<SafeAreaView style = {{ flex: 1 }}>
 			<View style = { styles.container }>
@@ -50,8 +44,8 @@ const SearchbarComponent = () => {
 					value = { search }
 				/>
 				<FlatList
-					data = { results }
-					keyExtractor = {(result) => result.mal_id.toString() }
+					data = { filteredDataSource }
+					keyExtractor = {(item, index) => index.toString()}
 					renderItem = {({ item }) => {
 						return(
 							<ListItem item = { item } />
@@ -59,12 +53,6 @@ const SearchbarComponent = () => {
 					}}
 					numColumns = { 2 }
 				/>
-				{/* <FlatList
-					data = { filteredDataSource }
-					keyExtractor = {(item, index) => index.toString()}
-					ItemSeparatorComponent = { ItemSeparatorView }
-					renderItem = { ItemView }
-				/> */}
 			</View>
 		</SafeAreaView>
 	);

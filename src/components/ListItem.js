@@ -4,11 +4,11 @@ import AddToListButton from './AddToListButton';
 
 const ListItem = ({ item }) => {
     return (
-        <View style={styles.container}>
-            <Image style={styles.image} source={{ uri: item.image_url }}/>
-            <Text style={styles.h1}>{item.title}</Text>
-            <View style={{flexDirection:'row', flexWrap:'wrap', justifyContent: 'space-between'}}>
-                <Text style={styles.h2}>Gênero: {item.genres[0].name}</Text>
+        <View style = { styles.container }>
+            <Image style = { styles.image } source = {{ uri: item.image_url }} />
+            <Text style = { styles.h1 }> { item.title } </Text>
+            <View style = {{ flexDirection:'row', flexWrap:'wrap', justifyContent: 'space-between' }}>
+                <Text style = { styles.h2 }> Gênero: { item.genres[0].name }</Text>
                 <AddToListButton />
             </View>
         </View>
@@ -52,4 +52,4 @@ const styles = StyleSheet.create({
     },
 })
 
-export default ListItem
+export default ListItem;
