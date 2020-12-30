@@ -8,20 +8,22 @@ import Searchbar from '../components/searchBar/SearchBar';
 const AnimeListScreen = () => {
     const [searchSeasonAnimeApi, results, errorMessage] = useResults()
     return (
-        <View style={styles.container}>
-            <CustomHeader title="Animes da temporada" />
-            <FlatList
-                data={results}
-                keyExtractor={(result) => result.mal_id}
-                renderItem={({ item }) => {
-                    return(
-                        //Colocar a lista abaixo dentro de searchbar
-                        <ListItem item={item} />
-                    )
-                }}
-                numColumns={2}
-            />
-        </View>
+        // <NewSearchBarComponent />
+        <Searchbar />
+        // <View style={styles.container}>
+        //     <CustomHeader title="Animes da temporada" />
+        //     <FlatList
+        //         data={results}
+        //         keyExtractor={(result) => result.mal_id}
+        //         renderItem={({ item }) => {
+        //             return(
+        //                 //Colocar a lista abaixo dentro de searchbar
+        //                 <ListItem item={item} />
+        //             )
+        //         }}
+        //         numColumns={2}
+        //     />
+        // </View>
     )
 }
 
