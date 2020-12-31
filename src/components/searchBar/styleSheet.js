@@ -14,5 +14,8 @@ export const styles =  StyleSheet.create({
         margin: 5,
         borderColor: '#009688',
         backgroundColor: '#FFFFFF',
+    },
+    loading: {
+        top: 240,
     }
 });
