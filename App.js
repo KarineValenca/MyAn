@@ -1,6 +1,7 @@
 import React from 'react';
 import { createAppContainer } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
+import { Provider as PaperProvider } from 'react-native-paper';
 
 import AnimeListScreen from './src/screens/AnimeListScreen';
 import SearchPageScreen from './src/screens/SearchPageScreen';
@@ -30,9 +31,11 @@ const App = () => {
 	const App = createAppContainer(navigator);
 
 	return (
-		<App 
-			ref = { navigator => { navigator = navigator }} 
-		/>
+		<PaperProvider>
+			<App 
+				ref = { navigator => { navigator = navigator }} 
+			/>
+		</PaperProvider>
   	);
 }
 

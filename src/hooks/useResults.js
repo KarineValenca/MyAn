@@ -1,11 +1,8 @@
 import { useEffect, useState } from 'react';
+import axios from 'axios';
 
 import jikan from '../api/jikan';
-import { currentSeasonAnime } from '../consts/consts';
-
-const currentYear = new Date().getFullYear();
-const currentMonth = new Date().getMonth() + 1;
-const currentSeason = currentSeasonAnime(currentMonth);
+import { apiListAnime } from '../services/consts';
 
 export default() => {
 
@@ -23,9 +20,8 @@ export default() => {
 
     const searchSeasonAnimeApi = async() => {
         try {
-
-            const response = await jikan.get('/season/' + currentYear + '/' + currentSeason);
-            setResults(response.data.anime)
+            const response = await axios.get(apiListAnime);
+            setResults(response.data.anime);
         } catch (e) {
             setErrorMessage('Something went wrong, try again later')
         }

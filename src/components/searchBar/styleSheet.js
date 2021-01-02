@@ -1,6 +1,7 @@
 import { StyleSheet } from 'react-native';
 
 export const styles =  StyleSheet.create({
+    
     container: {
         backgroundColor: 'white',
     },
@@ -17,5 +18,11 @@ export const styles =  StyleSheet.create({
     },
     loading: {
         top: 240,
+    },
+    textLoading: {
+        fontSize: 20,
+        textAlign: 'center',
+        marginBottom: -20,
+        top: 10
     }
 });

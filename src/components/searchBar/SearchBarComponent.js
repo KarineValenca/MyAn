@@ -1,39 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import { Searchbar, ActivityIndicator, Colors } from 'react-native-paper';
-import { SafeAreaView, View, FlatList } from 'react-native';
+import { SafeAreaView, View, FlatList, Text } from 'react-native';
+import axios from 'axios';
 
-import useResults from '../../hooks/useResults';
 import ListItem from '../ListItem';
 import { styles } from './styleSheet';
+import { apiListAnime } from '../../services/consts';
 
 const SearchbarComponent = () => {
   
 	const [search, setSearch] = useState('');
-	const [searchSeasonAnimeApi, results, errorMessage] = useResults();
 	const [filteredDataSource, setFilteredDataSource] = useState([]);
 	const [masterDataSource, setMasterDataSource] = useState([]);
 	const [loading, setLoading] = useState(true);
-	
-    useEffect(() => {
 
-		try {
-			async function getListAnimes() {
-				setLoading(true);
-				return await results;
-			}
-			getListAnimes().then(listAnimes => {
-				setFilteredDataSource(listAnimes);
-				setMasterDataSource(listAnimes);
+	useEffect(() => {
+		async function getList() {
+			await axios.get(apiListAnime)
+			.then(response => {
+				setFilteredDataSource(response.data.anime);
+				setMasterDataSource(response.data.anime);
 				setLoading(false);
-			});
-		} catch (error) {
-			setLoading(false);
-			console.log(error);
-		  }
-	}, []);  
-	  
+			})
+			.catch(error => console.log(error));
+		}
+		getList();
+	});
+
   	const searchFilterFunction = (text) => {
-		
 		if (text) {
 			const newData = masterDataSource.filter(
 				function (item) {
@@ -50,37 +44,41 @@ const SearchbarComponent = () => {
 		}
 	};
 
-  	return (
-		
+  	return (	
 		<SafeAreaView style = {{ flex: 1 }}>
 			<View style = { styles.container }>
-				<Searchbar
-					placeholder = 'Procure Aqui ...'
-					onChangeText={(text) => searchFilterFunction(text)}
-					value = { search }
-				/>
 				{
-					loading === true ? (
-						<ActivityIndicator 
-							animating = { true } 
-							color = { Colors.red800 }
-							style = { styles.loading } 
-							size = 'large'
-						/>
+					loading ? (
+						<>
+							<Text style = { styles.textLoading }> 
+								Carregando Lista, Por Favor Aguarde 
+							</Text>
+							<ActivityIndicator 
+								color = { Colors.red800 }
+								style = { styles.loading } 
+								size = 'large'
+							/>
+						</>
 					) : (
-						<FlatList
-							data = { filteredDataSource }
-							keyExtractor = {(item, index) => index.toString()}
-							renderItem = {({ item }) => {
-								return(
-									<ListItem item = { item } />
-								);
-							}}
-							numColumns = { 2 }
-						/>
+						<>
+							<Searchbar
+								placeholder = 'Procure Aqui ...'
+								onChangeText={(text) => searchFilterFunction(text)}
+								value = { search }
+							/>
+							<FlatList
+								data = { filteredDataSource }
+								keyExtractor = {(item, index) => index.toString()}
+								renderItem = {({ item }) => {
+									return(
+										<ListItem item = { item } />
+									);
+								}}
+								numColumns = { 2 }
+							/>
+						</>
 					)
 				}
-				
 			</View>
 		</SafeAreaView>
 	);

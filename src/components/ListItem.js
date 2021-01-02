@@ -3,7 +3,9 @@ import { View, Text, Image, StyleSheet } from 'react-native';
 import AddToListButton from './AddToListButton';
 
 const ListItem = ({ item }) => {
+    
     return (
+    
         <View style = { styles.container }>
             <Image style = { styles.image } source = {{ uri: item.image_url }} />
             <Text style = { styles.h1 }> { item.title } </Text>
@@ -16,6 +18,7 @@ const ListItem = ({ item }) => {
 }
 
 const styles = StyleSheet.create({
+    
     image: {
         flex: 1,
         width: 100,
