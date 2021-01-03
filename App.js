@@ -5,7 +5,7 @@ import { createBottomTabNavigator } from 'react-navigation-tabs'
 import React from 'react'
 import Icon from 'react-native-vector-icons/FontAwesome5'
 
-import SearchAnimeScreen from './src/screens/AnimeListScreen'
+import SearchAnimeScreen from './src/screens/SearchAnimeScreen'
 import MyAnimeListScreen from './src/screens/MyAnimeListScreen'
 
 const searchAnimeFlow = createSwitchNavigator({

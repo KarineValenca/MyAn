@@ -4,7 +4,7 @@ import useResults from '../hooks/useResults'
 import ListItem from '../components/ListItem'
 import CustomHeader from '../components/CustomHeader'
 
-const AnimeListScreen = () => {
+const SearchAnimeScreen = () => {
     const [searchSeasonAnimeApi, results, errorMessage] = useResults()
     return (
         
@@ -38,8 +38,8 @@ const styles = StyleSheet.create({
     }
 })
 
-AnimeListScreen.navigationOptions = () => {
+SearchAnimeScreen.navigationOptions = () => {
     return { headerShown: false }
 }
 
-export default AnimeListScreen
+export default SearchAnimeScreen
