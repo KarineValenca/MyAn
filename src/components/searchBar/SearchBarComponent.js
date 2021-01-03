@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Searchbar, ActivityIndicator, Colors } from 'react-native-paper';
-import { SafeAreaView, View, FlatList, Text } from 'react-native';
+import { Searchbar, ActivityIndicator } from 'react-native-paper';
+import { SafeAreaView, View, FlatList } from 'react-native';
 import axios from 'axios';
 
 import ListItem from '../ListItem';
@@ -12,22 +12,25 @@ const SearchbarComponent = () => {
 	const [search, setSearch] = useState('');
 	const [filteredDataSource, setFilteredDataSource] = useState([]);
 	const [masterDataSource, setMasterDataSource] = useState([]);
-	const [loading, setLoading] = useState(true);
+	const [loading, setLoading] = useState(false);
 
 	useEffect(() => {
-		async function getList() {
-			await axios.get(apiListAnime)
-			.then(response => {
-				setFilteredDataSource(response.data.anime);
-				setMasterDataSource(response.data.anime);
-				setLoading(false);
-			})
-			.catch(error => console.log(error));
-		}
-		getList();
+		getListAnime();
 	});
 
-  	const searchFilterFunction = (text) => {
+	async function getListAnime () {
+		if(loading) {
+			return;
+		}
+
+		setLoading(true);
+		const animes = await axios.get(apiListAnime);
+		setFilteredDataSource(animes.data.anime);
+		setMasterDataSource(animes.data.anime);
+		setLoading(false);
+	} 
+
+	const searchFilterFunction = (text) => {
 		if (text) {
 			const newData = masterDataSource.filter(
 				function (item) {
@@ -44,44 +47,42 @@ const SearchbarComponent = () => {
 		}
 	};
 
-  	return (	
+	const renderFooter = () => {
+		if (!loading) 
+			return null;
+		
+		return (
+			<View style = { styles.loading }>
+				<ActivityIndicator />
+		  	</View>
+		);
+	};
+
+	return(
 		<SafeAreaView style = {{ flex: 1 }}>
 			<View style = { styles.container }>
-				{
-					loading ? (
-						<>
-							<Text style = { styles.textLoading }> 
-								Carregando Lista, Por Favor Aguarde 
-							</Text>
-							<ActivityIndicator 
-								color = { Colors.red800 }
-								style = { styles.loading } 
-								size = 'large'
-							/>
-						</>
-					) : (
-						<>
-							<Searchbar
-								placeholder = 'Procure Aqui ...'
-								onChangeText={(text) => searchFilterFunction(text)}
-								value = { search }
-							/>
-							<FlatList
-								data = { filteredDataSource }
-								keyExtractor = {(item, index) => index.toString()}
-								renderItem = {({ item }) => {
-									return(
-										<ListItem item = { item } />
-									);
-								}}
-								numColumns = { 2 }
-							/>
-						</>
-					)
-				}
+				<Searchbar
+					placeholder = 'Procure Aqui ...'
+					onChangeText={(text) => searchFilterFunction(text)}
+					value = { search }
+				/>
+				<FlatList
+					data = { filteredDataSource }
+					keyExtractor = {(item, index) => item.mal_id }
+					maxToRenderPerBatch = { 20 }
+					onEndReached = { getListAnime }
+					  onEndReachedThreshold = { 0.1 } // equivale ao usuario estar a 10%do final da página
+					ListFooterComponent={ renderFooter }
+					renderItem = {({ item }) => {
+						return(
+							<ListItem item = { item } />
+						);
+					}}
+					numColumns = { 2 }
+				/>
 			</View>
 		</SafeAreaView>
 	);
-};
+}
 
 export default SearchbarComponent;
