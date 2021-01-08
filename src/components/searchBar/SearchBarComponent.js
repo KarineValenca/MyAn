@@ -1,12 +1,25 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Dimensions, Text, Image } from 'react-native';
+import { StyleSheet, View, Dimensions, Text, Image, FlatList , SafeAreaView} from 'react-native';
 import faker from 'faker';
 import { RecyclerListView, DataProvider, LayoutProvider } from 'recyclerlistview';
 
 import axios from 'axios';
 import { apiListAnime } from '../../services/consts';
+import DescriptionAnime from '../descriptionAnime/DescriptionAnime';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
+const fakeData = [];
+for(i = 0; i < 100; i+= 1) {
+	fakeData.push({
+		type: 'NORMAL',
+		item: {
+			id: i,
+			image: faker.image.avatar(),
+			name: faker.name.firstName(),
+			description: faker.random.words(5),
+		},
+	});
+}
 
 class SearchbarComponent extends Component {
 
@@ -15,37 +28,24 @@ class SearchbarComponent extends Component {
 
 		_isMounted = false;
 
-		const fakeData = [];
-		for(i = 0; i < 100; i+= 1) {
-			fakeData.push({
-				type: 'NORMAL',
-				item: {
-					id: i,
-					image: faker.image.avatar(),
-					name: faker.name.firstName(),
-					description: faker.random.words(5),
-				},
-			});
-		}
-
 		this.state = {
 			list: new DataProvider((r1, r2) => r1 !== r2).cloneWithRows(fakeData),
 		};
 
 		this.layoutProvider = new LayoutProvider((i) => {
-		return this.state.list.getDataForIndex(i).type;
+			return this.state.list.getDataForIndex(i).type;
 		}, (type, dim) => {
-		switch (type) {
-			case 'NORMAL': 
-			dim.width = SCREEN_WIDTH;
-			dim.height = 100;
-			break;
-			default: 
-			dim.width = 0;
-			dim.height = 0;
-			break;
-		};
-		})
+			switch (type) {
+				case 'NORMAL': 
+				dim.width = SCREEN_WIDTH;
+				dim.height = 100;
+				break;
+				default: 
+				dim.width = 0;
+				dim.height = 0;
+				break;
+			};
+		});
   }
 
   	async componentDidMount() {
@@ -62,7 +62,7 @@ class SearchbarComponent extends Component {
 					results.push({
 						type: 'NORMAL',
 						item: {
-							id: response.data.anime[aux].mal_id,
+							mal_id: response.data.anime[aux].mal_id,
 							title: response.data.anime[aux].title,
 							image_url: response.data.anime[aux].image_url
 						}
@@ -70,7 +70,7 @@ class SearchbarComponent extends Component {
 				}
 			}
 		});
-		
+
 		this.setState({ list: new DataProvider((r1, r2) => r1 !== r2).cloneWithRows(results) })
 	}
 
@@ -95,28 +95,36 @@ class SearchbarComponent extends Component {
 		})
 	}
 
+	getItem = (item) => {
+		alert('Id : ' + item.mal_id + ' Title : ' + item.title);
+	};
+
   	rowRenderer = (type, data) => {
-		const { image_url, title } = data.item;
 		return (
 			<View style = { styles.listItem } >
-				<Image style = { styles.image } source={{ uri: image_url }} />
-				<View style = { styles.body} >
-					<Text style = { styles.name }>{title}</Text>
+				<Image style = { styles.image } source = {{ uri: data.item.image_url }} />
+				<View style = { styles.body } >
+					<DescriptionAnime item = { data.item }/>
+					{/* <Text style = { styles.name } onPress={() => this.getItem(data.item)}> 
+						{ data.item.title }
+					</Text> */}
 				</View>
 			</View>
 		)
 	}
 
-  render() {
+  	render() {
 	    return (
-			<View style={styles.container}>
-				<RecyclerListView
-					style = {{ flex: 1 }}
-					rowRenderer = { this.rowRenderer }
-					dataProvider = { this.state.list }
-					layoutProvider = { this.layoutProvider }
-				/>
-			</View>
+			<SafeAreaView style = {{ flex: 1 }}>
+				<View style = { styles.container }>
+				 	<RecyclerListView
+						style = {{ flex: 1 }}
+						rowRenderer = { this.rowRenderer }
+						dataProvider = { this.state.list }
+						layoutProvider = { this.layoutProvider }
+					/>	
+				</View>
+			</SafeAreaView>
 		);
   	}
 }

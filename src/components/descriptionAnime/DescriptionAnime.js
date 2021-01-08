@@ -1,23 +1,16 @@
-import React, { useState } from "react";
-import { Alert,
-  Modal,
-  StyleSheet,
-  Text,
-  TouchableHighlight,
-  View
-} from "react-native";
+import React, { useState } from 'react';
+import { Alert, Modal, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
 
-const Description = () => {
+const DescriptionAnime = ({ item }) => {
+
     const [modalVisible, setModalVisible] = useState(false);
-  return (
-    <View style={styles.centeredView}>
+
+    return (
+        <View style={styles.centeredView}>
       <Modal
-        animationType="slide"
+        animationType="fade"
         transparent={true}
         visible={modalVisible}
-        onRequestClose={() => {
-          Alert.alert("Modal has been closed.");
-        }}
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
@@ -35,7 +28,7 @@ const Description = () => {
         </View>
       </Modal>
 
-      <TouchableHighlight
+      <TouchableHighlight underlayColor="green"
         style={styles.openButton}
         onPress={() => {
           setModalVisible(true);
@@ -44,8 +37,8 @@ const Description = () => {
         <Text style={styles.textStyle}>Show Modal</Text>
       </TouchableHighlight>
     </View>
-  )
-};
+    );
+}
 
 const styles = StyleSheet.create({
     centeredView: {
@@ -86,4 +79,4 @@ const styles = StyleSheet.create({
     }
   });
 
-export default Description;
+export default DescriptionAnime;
