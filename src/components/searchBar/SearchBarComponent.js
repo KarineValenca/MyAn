@@ -50,23 +50,33 @@ class SearchbarComponent extends Component {
 
   	async componentDidMount() {
 
-    	let countRequest = 0;
+		let countRequest = 0;
+		let countGender = 0;
 		const results = [];
+		let episode = '';
 
 		this._isMounted = true;
 
 		await axios.get(apiListAnime).then(response => {
 			countRequest = Object.keys(response.data.anime).length;
 			if(this._isMounted) {
-				for(aux = 0; aux < countRequest; aux ++) {
+				for(let aux = 0; aux < countRequest; aux ++) {
+					if(response.data.anime[aux].episodes !== null 
+						&& response.data.anime[aux].episodes != '') {
+							episode = response.data.anime[aux].episodes
+					} else {
+						episode = 'Underfined';
+					}
 					results.push({
 						type: 'NORMAL',
 						item: {
 							mal_id: response.data.anime[aux].mal_id,
 							title: response.data.anime[aux].title,
-							image_url: response.data.anime[aux].image_url
+							image_url: response.data.anime[aux].image_url,
+							synopsis: response.data.anime[aux].synopsis,
+							episodes: episode,
 						}
-					})
+					});
 				}
 			}
 		});
@@ -105,9 +115,6 @@ class SearchbarComponent extends Component {
 				<Image style = { styles.image } source = {{ uri: data.item.image_url }} />
 				<View style = { styles.body } >
 					<DescriptionAnime item = { data.item }/>
-					{/* <Text style = { styles.name } onPress={() => this.getItem(data.item)}> 
-						{ data.item.title }
-					</Text> */}
 				</View>
 			</View>
 		)
