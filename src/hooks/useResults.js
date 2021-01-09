@@ -20,7 +20,6 @@ export default() => {
 
     const searchSeasonAnimeApi = async() => {
         try {
-            
             const response = await axios.get(apiListAnime);
             setResults(response.data.anime);
         } catch (e) {
@@ -30,7 +29,7 @@ export default() => {
 
     useEffect(() => {
         searchSeasonAnimeApi()
-    }, [])
+    }, []);
 
     return [searchSeasonAnimeApi, results, errorMessage];
 }

@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Modal, StyleSheet, Text, TouchableHighlight, View, Image, ScrollView } from 'react-native';
 
+import ListItem from '../ListItem';
+
 const DescriptionAnime = ({ item }) => {
 
-    const [modalVisible, setModalVisible] = useState(false);
+	const [modalVisible, setModalVisible] = useState(false);
 
     return (
 
@@ -38,13 +40,18 @@ const DescriptionAnime = ({ item }) => {
 				underlayColor = '#00ff80' style = { styles.openButton } 
 				onPress = {() => { setModalVisible(true); }}
 			>
-				<Text style = { styles.textStyle }> { item.title } </Text>
+				<ListItem item = { item }/>
 			</TouchableHighlight>
 		</View>
     );
 }
 
 const styles = StyleSheet.create({
+	h1: {
+		color: 'black',
+        textAlign: 'center',
+        fontSize: 14
+    },
     centeredView: {
 		flex: 1,
 		justifyContent: 'center',
@@ -87,7 +94,6 @@ const styles = StyleSheet.create({
 	},
     textStyle: {
       	color: 'black',
-      	fontWeight: 'bold',
 		textAlign: 'center',
 		fontSize: 16,
     },
