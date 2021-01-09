@@ -1,165 +1,124 @@
-import React, { Component } from 'react';
-import { StyleSheet, View, Dimensions, Text, Image, FlatList , SafeAreaView} from 'react-native';
-import faker from 'faker';
-import { RecyclerListView, DataProvider, LayoutProvider } from 'recyclerlistview';
+import React, { useState, useEffect, useCallback } from 'react';
+import { SafeAreaView, View, StyleSheet, Alert } from 'react-native';
+import { Searchbar, ActivityIndicator } from 'react-native-paper';
+import { OptimizedFlatList } from 'react-native-optimized-flatlist';
 
-import axios from 'axios';
-import { apiListAnime } from '../../services/consts';
-import DescriptionAnime from '../descriptionAnime/DescriptionAnime';
+import ListItem from '../ListItem';
+import useResults from '../../hooks/useResults';
 
-const SCREEN_WIDTH = Dimensions.get('window').width;
-const fakeData = [];
-for(i = 0; i < 100; i+= 1) {
-	fakeData.push({
-		type: 'NORMAL',
-		item: {
-			id: i,
-			image: faker.image.avatar(),
-			name: faker.name.firstName(),
-			description: faker.random.words(5),
-		},
+const SearchbarComponent = () => {
+  
+	const [search, setSearch] = useState('');
+	const [error, setError] = useState('');
+	const [filteredDataSource, setFilteredDataSource] = useState([]);
+	const [masterDataSource, setMasterDataSource] = useState([]);
+	const [loading, setLoading] = useState(false);
+    const [searchSeasonAnimeApi, results, errorMessage] = useResults();
+
+	useEffect(() => {
+		getListAnime();
 	});
-}
 
-class SearchbarComponent extends Component {
+	function getListAnime () {
 
-  	constructor(props) {
-		super(props);
+		setLoading(true);
 
-		_isMounted = false;
+		try {
 
-		this.state = {
-			list: new DataProvider((r1, r2) => r1 !== r2).cloneWithRows(fakeData),
-		};
+			setMasterDataSource(results);
+			setFilteredDataSource(results);
+			setLoading(false);
+		} catch(error) {
 
-		this.layoutProvider = new LayoutProvider((i) => {
-			return this.state.list.getDataForIndex(i).type;
-		}, (type, dim) => {
-			switch (type) {
-				case 'NORMAL': 
-				dim.width = SCREEN_WIDTH;
-				dim.height = 100;
-				break;
-				default: 
-				dim.width = 0;
-				dim.height = 0;
-				break;
-			};
-		});
-  }
+			setLoading(false);
+			Alert(errorMessage);
+		}
+	} 
 
-  	async componentDidMount() {
-
-		let countRequest = 0;
-		let countGender = 0;
-		const results = [];
-		let episode = '';
-
-		this._isMounted = true;
-
-		await axios.get(apiListAnime).then(response => {
-			countRequest = Object.keys(response.data.anime).length;
-			if(this._isMounted) {
-				for(let aux = 0; aux < countRequest; aux ++) {
-					if(response.data.anime[aux].episodes !== null 
-						&& response.data.anime[aux].episodes != '') {
-							episode = response.data.anime[aux].episodes
-					} else {
-						episode = 'Underfined';
-					}
-					results.push({
-						type: 'NORMAL',
-						item: {
-							mal_id: response.data.anime[aux].mal_id,
-							title: response.data.anime[aux].title,
-							image_url: response.data.anime[aux].image_url,
-							synopsis: response.data.anime[aux].synopsis,
-							episodes: episode,
-						}
-					});
+	const searchFilterFunction = (text) => {
+		if (text) {
+			const newData = masterDataSource.filter(
+				function (item) {
+					const itemData = item.title ? item.title.toUpperCase() : ''.toUpperCase();
+					const textData = text.toUpperCase();
+					return itemData.indexOf(textData) > -1;
 				}
-			}
-		});
-
-		this.setState({ list: new DataProvider((r1, r2) => r1 !== r2).cloneWithRows(results) })
-	}
-
-	componentWillUnmount() {
-		this._isMounted = false;
-	}
-
-	layoutProvider = () => {
-		new LayoutProvider((i) => {
-			return this.state.list.getDataForIndex(i).type;
-		}, (type, dim) => {
-			switch (type) {
-				case 'NORMAL': 
-					dim.width = SCREEN_WIDTH;
-					dim.height = 100;
-				break;
-				default: 
-					dim.width = 0;
-					dim.height = 0;
-				break;
-			};
-		})
-	}
-
-	getItem = (item) => {
-		alert('Id : ' + item.mal_id + ' Title : ' + item.title);
+			);
+			setFilteredDataSource(newData);
+			setSearch(text);
+		} else {
+			setFilteredDataSource(masterDataSource);
+			setSearch(text);
+		}
 	};
 
-  	rowRenderer = (type, data) => {
+	const renderFooter = () => {
+		if (!loading) {
+			return null;
+		} 
+		
 		return (
-			<View style = { styles.listItem } >
-				<Image style = { styles.image } source = {{ uri: data.item.image_url }} />
-				<View style = { styles.body } >
-					<DescriptionAnime item = { data.item }/>
-				</View>
-			</View>
-		)
-	}
-
-  	render() {
-	    return (
-			<SafeAreaView style = {{ flex: 1 }}>
-				<View style = { styles.container }>
-				 	<RecyclerListView
-						style = {{ flex: 1 }}
-						rowRenderer = { this.rowRenderer }
-						dataProvider = { this.state.list }
-						layoutProvider = { this.layoutProvider }
-					/>	
-				</View>
-			</SafeAreaView>
+			<View style = { styles.loading }>
+				<ActivityIndicator />
+		  	</View>
 		);
-  	}
+	};
+
+	const renderItem = useCallback(({ item }) =>
+		<ListItem item = { item } />
+	,[]);
+
+	const keyExtractor = useCallback((item) => item.mal_id.toString(), []);
+
+	return(
+		<SafeAreaView style = {{ flex: 1 }}>
+			<View style = { styles.container }>
+				<Searchbar
+					placeholder = 'Procure Aqui ...'
+					onChangeText={(text) => searchFilterFunction(text)}
+					value = { search }
+				/>
+				<OptimizedFlatList
+					data = { filteredDataSource }
+					keyExtractor = { keyExtractor }
+					maxToRenderPerBatch = { 20 }
+					onEndReached = { getListAnime }
+					onEndReachedThreshold = { 0.2 }
+					ListFooterComponent={ renderFooter }
+					renderItem = { renderItem }
+					numColumns = { 2 }
+				/>
+			</View>
+		</SafeAreaView>
+	);
 }
 
-const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		backgroundColor: '#FFF',
-		minHeight: 1,
-		minWidth: 1,
-	},
-	body: {
-		marginLeft: 10,
-		marginRight: 10,
-		maxWidth: SCREEN_WIDTH - (80 + 10 + 20),
-	},
-	image: {
-		height: 80,
-		width: 80,
-	},
-	name: {
-		fontSize: 20,
-		fontWeight: 'bold',
-	},
-	listItem: {
-		flexDirection: 'row',
-		margin: 10,
-	},
+const styles =  StyleSheet.create({
+    
+    container: {
+        backgroundColor: 'white',
+    },
+    itemStyle: {
+        padding: 10,
+    },
+    textInputStyle: {
+        height: 40,
+        borderWidth: 1,
+        paddingLeft: 20,
+        margin: 5,
+        borderColor: '#009688',
+        backgroundColor: '#FFFFFF',
+    },
+    loading: {
+		top: 240,
+		color: 'red'
+    },
+    textLoading: {
+        fontSize: 20,
+        textAlign: 'center',
+        marginBottom: -20,
+        top: 10
+    }
 });
 
 export default SearchbarComponent;

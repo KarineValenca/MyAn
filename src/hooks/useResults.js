@@ -20,10 +20,11 @@ export default() => {
 
     const searchSeasonAnimeApi = async() => {
         try {
+            
             const response = await axios.get(apiListAnime);
             setResults(response.data.anime);
         } catch (e) {
-            setErrorMessage('Something went wrong, try again later')
+            setErrorMessage('Something Went Wrong, Try Again Later')
         }
     }
 
