@@ -2,7 +2,8 @@ import React from 'react'
 import { FlatList, View, Text, StyleSheet } from 'react-native'
 import CustomHeader from '../components/CustomHeader'
 import { ListItem, Avatar } from 'react-native-elements'
-import Icon from 'react-native-vector-icons/FontAwesome';
+import Icon from 'react-native-vector-icons/FontAwesome'
+import OptionsMenu from '../components/optionsMenu/OptionsMenu'
 
 const MyListAnimeScreen = () => {
     const list = [
@@ -31,6 +32,7 @@ const MyListAnimeScreen = () => {
     return(
         <View>
             <CustomHeader title="Minha Lista de Animes" />
+            <OptionsMenu options={["Assistindo","Já assisti", "Desisti"]}/>
             <FlatList
                 keyExtractor={keyExtractor}
                 data={list}
