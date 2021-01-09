@@ -3,7 +3,6 @@ import { SafeAreaView, View, StyleSheet, Alert } from 'react-native';
 import { Searchbar, ActivityIndicator } from 'react-native-paper';
 import { OptimizedFlatList } from 'react-native-optimized-flatlist';
 
-import ListItem from '../ListItem';
 import DescriptionAnime from '../descriptionAnime/DescriptionAnime';
 import useResults from '../../hooks/useResults';
 
@@ -22,16 +21,8 @@ const SearchbarComponent = () => {
 
 	function getListAnime () {
 		setLoading(true);
+		
 		try {
-
-			// const response = results.map((anime) => {
-			// 	if(anime.episodes === null || anime.episodes === '') {
-			// 		anime.episodes = 'Undefined';
-			// 	} else {
-			// 		anime.episodes = anime.episodes;
-			// 	}
-			// 	return anime
-			// });
 			setMasterDataSource(results);
 			setFilteredDataSource(results);
 			setLoading(false);

@@ -8,8 +8,7 @@ const DescriptionAnime = ({ item }) => {
 	const [modalVisible, setModalVisible] = useState(false);
 
     return (
-
-        <View style = { styles.centeredView }>
+        <View>
 			<Modal animationType = 'fade' transparent = { true } visible = { modalVisible }>
 				<View style = { styles.centeredView }>
 					<View style = { styles.modalView }>
@@ -37,7 +36,7 @@ const DescriptionAnime = ({ item }) => {
 			</Modal>
 
 			<TouchableHighlight 
-				underlayColor = '#00ff80' style = { styles.openButton } 
+				underlayColor = 'transparent' style = { styles.openButton } 
 				onPress = {() => { setModalVisible(true); }}
 			>
 				<ListItem item = { item }/>
@@ -47,18 +46,6 @@ const DescriptionAnime = ({ item }) => {
 }
 
 const styles = StyleSheet.create({
-	h1: {
-		color: 'black',
-        textAlign: 'center',
-        fontSize: 14
-    },
-    centeredView: {
-		flex: 1,
-		justifyContent: 'center',
-		alignItems: 'center',
-		top: -5,
-		width: 'auto'
-	},
 	image: {
         width: 150,
 		height: 200,
@@ -84,7 +71,6 @@ const styles = StyleSheet.create({
 		elevation: 5
     },
     openButton: {
-		padding: 10,
 		borderRadius: 10,
 	},
 	closeButton: {
