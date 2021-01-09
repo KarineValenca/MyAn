@@ -9,7 +9,6 @@ import useResults from '../../hooks/useResults';
 const SearchbarComponent = () => {
   
 	const [search, setSearch] = useState('');
-	const [error, setError] = useState('');
 	const [filteredDataSource, setFilteredDataSource] = useState([]);
 	const [masterDataSource, setMasterDataSource] = useState([]);
 	const [loading, setLoading] = useState(false);
