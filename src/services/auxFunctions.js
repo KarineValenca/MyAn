@@ -1,5 +1,4 @@
 export const currentSeasonAnime = (currentMonth) => {
-    
     let season = '';
 
     if(currentMonth > 3 && currentMonth <= 5) {

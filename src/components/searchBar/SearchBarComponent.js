@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { SafeAreaView, View, StyleSheet, Alert } from 'react-native';
 import { Searchbar, ActivityIndicator } from 'react-native-paper';
-import { SafeAreaView, View, FlatList } from 'react-native';
-import axios from 'axios';
+import { OptimizedFlatList } from 'react-native-optimized-flatlist';
 
-import ListItem from '../ListItem';
-import { styles } from './styleSheet';
-import { apiListAnime } from '../../services/consts';
+import DescriptionAnime from '../descriptionAnime/DescriptionAnime';
+import useResults from '../../hooks/useResults';
 
 const SearchbarComponent = () => {
   
@@ -13,21 +12,24 @@ const SearchbarComponent = () => {
 	const [filteredDataSource, setFilteredDataSource] = useState([]);
 	const [masterDataSource, setMasterDataSource] = useState([]);
 	const [loading, setLoading] = useState(false);
+    const [searchSeasonAnimeApi, results, errorMessage] = useResults();
 
 	useEffect(() => {
 		getListAnime();
 	});
 
-	async function getListAnime () {
-		if(loading) {
-			return;
-		}
-
+	function getListAnime () {
 		setLoading(true);
-		const animes = await axios.get(apiListAnime);
-		setFilteredDataSource(animes.data.anime);
-		setMasterDataSource(animes.data.anime);
-		setLoading(false);
+		
+		try {
+			setMasterDataSource(results);
+			setFilteredDataSource(results);
+			setLoading(false);
+		} catch(error) {
+
+			setLoading(false);
+			Alert(errorMessage);
+		}
 	} 
 
 	const searchFilterFunction = (text) => {
@@ -48,8 +50,9 @@ const SearchbarComponent = () => {
 	};
 
 	const renderFooter = () => {
-		if (!loading) 
+		if (!loading) {
 			return null;
+		} 
 		
 		return (
 			<View style = { styles.loading }>
@@ -57,6 +60,12 @@ const SearchbarComponent = () => {
 		  	</View>
 		);
 	};
+
+	const renderItem = useCallback(({ item }) =>
+		<DescriptionAnime item = { item } />
+	,[]);
+
+	const keyExtractor = useCallback((item) => item.mal_id.toString(), []);
 
 	return(
 		<SafeAreaView style = {{ flex: 1 }}>
@@ -66,23 +75,47 @@ const SearchbarComponent = () => {
 					onChangeText={(text) => searchFilterFunction(text)}
 					value = { search }
 				/>
-				<FlatList
+				<OptimizedFlatList
 					data = { filteredDataSource }
-					keyExtractor = {(item, index) => item.mal_id }
+					keyExtractor = { keyExtractor }
 					maxToRenderPerBatch = { 20 }
 					onEndReached = { getListAnime }
-					  onEndReachedThreshold = { 0.1 } // equivale ao usuario estar a 10%do final da página
+					onEndReachedThreshold = { 0.2 }
 					ListFooterComponent={ renderFooter }
-					renderItem = {({ item }) => {
-						return(
-							<ListItem item = { item } />
-						);
-					}}
+					renderItem = { renderItem }
 					numColumns = { 2 }
 				/>
 			</View>
 		</SafeAreaView>
 	);
 }
+
+const styles =  StyleSheet.create({
+    
+    container: {
+        backgroundColor: 'white',
+    },
+    itemStyle: {
+        padding: 10,
+    },
+    textInputStyle: {
+        height: 40,
+        borderWidth: 1,
+        paddingLeft: 20,
+        margin: 5,
+        borderColor: '#009688',
+        backgroundColor: '#FFFFFF',
+    },
+    loading: {
+		top: 240,
+		color: 'red'
+    },
+    textLoading: {
+        fontSize: 20,
+        textAlign: 'center',
+        marginBottom: -20,
+        top: 10
+    }
+});
 
 export default SearchbarComponent;
