@@ -31,20 +31,18 @@ const MyListAnimeScreen = () => {
                 <ListItem.Title>{item.name}</ListItem.Title>
                 <ListItem.Subtitle>{item.subtitle}</ListItem.Subtitle>
             </ListItem.Content>
-            <TouchableOpacity onPress={onPress}>
-                <Icon name="ellipsis-v" size={20} color="orange"/>
-            </TouchableOpacity>
+            <OptionsMenu options={["Assistindo","Já assisti", "Desisti"]}/>
         </ListItem>
     )
     return(
         <View>
             <CustomHeader title="Minha Lista de Animes" />
-            <OptionsMenu options={["Assistindo","Já assisti", "Desisti"]}/>
             <FlatList
                 keyExtractor={keyExtractor}
                 data={list}
                 renderItem={renderItem}
             />
+             <OptionsMenu options={["Assistindo","Já assisti", "Desisti"]}/>
         </View>
     )
 }

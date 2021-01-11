@@ -35,7 +35,6 @@ const OptionsMenu = ({ options }) => {
                     <Icon name="ellipsis-v" size={20} color="orange"/>
                 </TouchableOpacity>
             <View style = { styles.optionContainer }>
-                
                 { isOptionsVisible ? showOptions() : null }
             </View>
         </View>
