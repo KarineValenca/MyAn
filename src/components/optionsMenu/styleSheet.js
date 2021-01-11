@@ -2,6 +2,9 @@ import { StyleSheet } from 'react-native'
 
 export const styles = StyleSheet.create({
     container: {
+        alignItems: 'flex-end'
+    },
+    optionContainer: {
         alignItems: 'center',
         shadowColor: "#000",
         shadowOffset: {
@@ -12,6 +15,8 @@ export const styles = StyleSheet.create({
         shadowRadius: 5.46,
         elevation: 2,
         width: '35%',
-        backgroundColor: 'white'
+        backgroundColor: 'white',
+        //position: 'absolute'
     }
+    
 })

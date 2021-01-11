@@ -1,5 +1,5 @@
 import React from 'react'
-import { FlatList, View, Text, StyleSheet } from 'react-native'
+import { FlatList, View, TouchableOpacity, StyleSheet } from 'react-native'
 import CustomHeader from '../components/CustomHeader'
 import { ListItem, Avatar } from 'react-native-elements'
 import Icon from 'react-native-vector-icons/FontAwesome'
@@ -18,6 +18,11 @@ const MyListAnimeScreen = () => {
             subtitle: 'Sci-Fi'
         },
     ]
+
+    const onPress = () => {
+        console.log("Salve")
+    }
+
     keyExtractor = (item, index) => index.toString()
     renderItem = ({ item }) => (
         <ListItem bottomDivider>
@@ -26,7 +31,9 @@ const MyListAnimeScreen = () => {
                 <ListItem.Title>{item.name}</ListItem.Title>
                 <ListItem.Subtitle>{item.subtitle}</ListItem.Subtitle>
             </ListItem.Content>
-            <Icon name="ellipsis-v" size={20} color="orange"/>
+            <TouchableOpacity onPress={onPress}>
+                <Icon name="ellipsis-v" size={20} color="orange"/>
+            </TouchableOpacity>
         </ListItem>
     )
     return(
