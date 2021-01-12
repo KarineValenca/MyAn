@@ -3,7 +3,7 @@
 <p align = "justify"> The MyAn application is free software, which aims to present annual anime, separated by the seasons. This application was developed using the React Native language.
 </p>
 
-## Instalação React Native
+## Installation React Native
 
 <p align = "justify"> The commands below are intended for users using the Linux operating system.
 
@@ -36,7 +36,7 @@ sudo snap install android-studio --classic
 
 <p align = "justify"> After installing Android Studio, just follow the instructions. Android Studio itself installs the Android SDK. </p> 
 
-### Configurando Variáveis de Ambiente
+### Setting Variable of Ambient 
 
 <p align = "justify"> In the terminal, run the following command: sudo (editor of your choice (gedit, vscode, nano) $ HOME / .bashrc). </p>
 
@@ -68,7 +68,7 @@ npm install -g react-native-cli
 
 <p align = "justify"> With all the necessary dependencies installed, we go to the application. </p>
 
-## Como Usar o MyAn
+## How to Use MyAn
 
 <p align = "justify"> First, "clone" the project. Open the terminal and run the following command: </p> 
 
