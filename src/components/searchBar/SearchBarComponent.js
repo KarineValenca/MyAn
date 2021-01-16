@@ -12,7 +12,7 @@ const SearchbarComponent = () => {
 	const [filteredDataSource, setFilteredDataSource] = useState([]);
 	const [masterDataSource, setMasterDataSource] = useState([]);
 	const [loading, setLoading] = useState(false);
-    const [searchSeasonAnimeApi, results, errorMessage] = useResults();
+	const [searchSeasonAnimeApi, results, errorMessage] = useResults();
 
 	useEffect(() => {
 		getListAnime();
