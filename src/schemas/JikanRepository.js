@@ -1,13 +1,14 @@
+import { jikanRepository } from '../services/consts';
+
 export default class RepositorySchema {
     static schema = {
-        name: 'JikanRepository',
-        primaryKey: 'mal_id',
+        name: jikanRepository,
         properties: {
             mal_id: { type: 'int', indexed: true },
             title: 'string',
             image_url: 'string',
             synopsis: 'string',
-            url: 'int',
+            episodes: { type: 'int', default: 0 }
         },
     };
 }

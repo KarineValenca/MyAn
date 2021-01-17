@@ -1,175 +1,140 @@
-import React, { useState, useEffect, useCallback, Component } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { SafeAreaView, View, StyleSheet, Alert, Text } from 'react-native';
 import { Searchbar, ActivityIndicator } from 'react-native-paper';
 import { OptimizedFlatList } from 'react-native-optimized-flatlist';
+import { useNetInfo } from "@react-native-community/netinfo";
+import axios from 'axios';
 
 import DescriptionAnime from '../descriptionAnime/DescriptionAnime';
 import useResults from '../../hooks/useResults';
+import getRealm from '../../services/realm';
+import { apiListAnime, jikanRepository } from '../../services/consts';
 
-const Realm = require('realm');
+const SearchbarComponent = () => {
+  
+	const netInfo = useNetInfo();
+	const [search, setSearch] = useState('');
+	const [filteredDataSource, setFilteredDataSource] = useState([]);
+	const [masterDataSource, setMasterDataSource] = useState([]);
+	const [loading, setLoading] = useState(false);
+	const [searchSeasonAnimeApi, results, errorMessage] = useResults();
 
-class SearchbarComponent extends Component {
+	useEffect(() => {
+		async function syncListAnime() {
+			const realm = await getRealm();
+			const animes = realm.objects(jikanRepository);
+			console.log(animes.length)
 
-	constructor(props) {
-		super(props);
-		this.state = { realm: null };
+			if(netInfo.type == 'wifi' && animes.length == 0) {
+				await getListAnime();
+				setFilteredDataSource(results);
+				setMasterDataSource(results);
+				setLoading(false);
+			} else {
+				const response = realm.objects(jikanRepository);
+				setFilteredDataSource(response);
+				setMasterDataSource(response);
+			} 
+		}
+		syncListAnime();
+	}, []);
+
+	async function getListAnime() {
+		try {
+			setLoading(true);
+			const response = await axios.get(apiListAnime);
+			await saveListAnime(response.data.anime);
+		} catch(err) {
+			console.log(err)
+			setLoading(false);
+		}
 	}
 
-	CheckConnectivity = () => {
-		// For Android devices
-		if (Platform.OS === "android") {
-		  NetInfo.isConnected.fetch().then(isConnected => {
-			if (isConnected) {
-			  Alert.alert("You are online!");
-			} else {
-			  Alert.alert("You are offline!");
+	async function saveListAnime(animes) {
+		const data = {};
+		const realm = await getRealm();
+		
+		for(let aux = 0; aux < animes.length; aux ++) {
+			if(animes[aux].episodes === null) {
+				animes[aux].episodes = 0;
 			}
-		  });
-		} else {
-		  // For iOS devices
-		  NetInfo.isConnected.addEventListener(
-			"connectionChange",
-			this.handleFirstConnectivityChange
-		  );
-		}
-	  };
-	
-	  handleFirstConnectivityChange = isConnected => {
-		NetInfo.isConnected.removeEventListener(
-		  "connectionChange",
-		  this.handleFirstConnectivityChange
-		);
-	
-		if (isConnected === false) {
-		  Alert.alert("You are offline!");
-		} else {
-		  Alert.alert("You are online!");
-		}
-	  };
+			data['mal_id'] = animes[aux].mal_id;
+			data['title'] = animes[aux].title;
+			data['image_url'] = animes[aux].image_url;
+			data['synopsis'] = animes[aux].synopsis;
+			data['episodes'] = animes[aux].episodes;
 
-	componentDidMount() {
-		Realm.open({
-		  schema: [{name: 'Dog', properties: {name: 'string'}}]
-		}).then(realm => {
-			
-		//   realm.write(() => {
-		// 	realm.create('Dog', {name: 'Rex'});
-		//   });
-		  this.setState({ realm });
-		});
-		if(Realm.ConnectionState !== null) {
-			console.log('Conectado')
+			realm.write(() => {
+				realm.create(jikanRepository, data, 'modified');
+			});
+		}
+	}
+
+	const searchFilterFunction = (text) => {
+		if (text) {
+			const newData = masterDataSource.filter(
+				function (item) {
+					const itemData = item.title ? item.title.toUpperCase() : ''.toUpperCase();
+					const textData = text.toUpperCase();
+					return itemData.indexOf(textData) > -1;
+				}
+			);
+			setFilteredDataSource(newData);
+			setSearch(text);
 		} else {
-			console.log('Off')
+			setFilteredDataSource(masterDataSource);
+			setSearch(text);
 		}
-	  }
-	
-	  componentWillUnmount() {
-		// Close the realm if there is one open.
-		const {realm} = this.state;
-		if (realm !== null && !realm.isClosed) {
-		  realm.close();
-		}
-	  }
-	
-	  render() {
-		const info = this.state.realm
-		  ? 'Number of dogs in this Realm: ' + this.state.realm.objects('Dog').length
-		  : 'Loading...';
-	
+	};
+
+	const renderFooter = () => {
+		if (!loading) {
+			return null;
+		} 
+		
 		return (
-		  <View style={styles.container}>
-			<Text style={styles.welcome}>
-			  {info}
-			</Text>
-		  </View>
+			<View style = { styles.loading }>
+				<ActivityIndicator />
+		  	</View>
 		);
-	  }
+	};
+
+	const renderItem = useCallback(({ item }) =>
+		<DescriptionAnime item = { item } />
+	,[]);
+
+	const keyExtractor = useCallback((item) => item.mal_id.toString(), []);
+
+	return(
+		<SafeAreaView style = {{ flex: 1 }}>
+			<View style = { styles.container }>
+				<Searchbar
+					placeholder = 'Procure Aqui '
+					onChangeText={(text) => searchFilterFunction(text)}
+					value = { search }
+				/>
+				{
+					loading == true ? (
+						<View style = { styles.loading }>
+							<ActivityIndicator />
+						</View>
+					) : (
+						<OptimizedFlatList
+							data = { filteredDataSource }
+							keyExtractor = { keyExtractor }
+							maxToRenderPerBatch = { 20 }
+							onEndReachedThreshold = { 0.2 }
+							ListFooterComponent={ renderFooter }
+							renderItem = { renderItem }
+							numColumns = { 2 }
+						/> 
+					)
+				}
+
+			</View>
+		</SafeAreaView>
+	);
 }
-
-// const SearchbarComponent = () => {
-  
-// 	const [search, setSearch] = useState('');
-// 	const [filteredDataSource, setFilteredDataSource] = useState([]);
-// 	const [masterDataSource, setMasterDataSource] = useState([]);
-// 	const [loading, setLoading] = useState(false);
-//     const [searchSeasonAnimeApi, results, errorMessage] = useResults();
-
-// 	useEffect(() => {
-// 		getListAnime();
-// 	});
-
-// 	function getListAnime () {
-// 		setLoading(true);
-		
-// 		try {
-// 			setMasterDataSource(results);
-// 			setFilteredDataSource(results);
-// 			setLoading(false);
-// 		} catch(error) {
-
-// 			setLoading(false);
-// 			Alert(errorMessage);
-// 		}
-// 	} 
-
-// 	const searchFilterFunction = (text) => {
-// 		if (text) {
-// 			const newData = masterDataSource.filter(
-// 				function (item) {
-// 					const itemData = item.title ? item.title.toUpperCase() : ''.toUpperCase();
-// 					const textData = text.toUpperCase();
-// 					return itemData.indexOf(textData) > -1;
-// 				}
-// 			);
-// 			setFilteredDataSource(newData);
-// 			setSearch(text);
-// 		} else {
-// 			setFilteredDataSource(masterDataSource);
-// 			setSearch(text);
-// 		}
-// 	};
-
-// 	const renderFooter = () => {
-// 		if (!loading) {
-// 			return null;
-// 		} 
-		
-// 		return (
-// 			<View style = { styles.loading }>
-// 				<ActivityIndicator />
-// 		  	</View>
-// 		);
-// 	};
-
-// 	const renderItem = useCallback(({ item }) =>
-// 		<DescriptionAnime item = { item } />
-// 	,[]);
-
-// 	const keyExtractor = useCallback((item) => item.mal_id.toString(), []);
-
-// 	return(
-// 		<SafeAreaView style = {{ flex: 1 }}>
-// 			<View style = { styles.container }>
-// 				<Searchbar
-// 					placeholder = 'Procure Aqui ...'
-// 					onChangeText={(text) => searchFilterFunction(text)}
-// 					value = { search }
-// 				/>
-// 				<OptimizedFlatList
-// 					data = { filteredDataSource }
-// 					keyExtractor = { keyExtractor }
-// 					maxToRenderPerBatch = { 20 }
-// 					onEndReached = { getListAnime }
-// 					onEndReachedThreshold = { 0.2 }
-// 					ListFooterComponent={ renderFooter }
-// 					renderItem = { renderItem }
-// 					numColumns = { 2 }
-// 				/>
-// 			</View>
-// 		</SafeAreaView>
-// 	);
-// }
 
 const styles =  StyleSheet.create({
     
@@ -188,8 +153,7 @@ const styles =  StyleSheet.create({
         backgroundColor: '#FFFFFF',
     },
     loading: {
-		top: 240,
-		color: 'red'
+		top: 240
     },
     textLoading: {
         fontSize: 20,
