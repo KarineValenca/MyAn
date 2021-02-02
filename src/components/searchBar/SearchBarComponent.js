@@ -1,36 +1,69 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { SafeAreaView, View, StyleSheet, Alert } from 'react-native';
+import { SafeAreaView, View, StyleSheet } from 'react-native';
 import { Searchbar, ActivityIndicator } from 'react-native-paper';
 import { OptimizedFlatList } from 'react-native-optimized-flatlist';
+import { useNetInfo } from "@react-native-community/netinfo";
+import axios from 'axios';
 
 import DescriptionAnime from '../descriptionAnime/DescriptionAnime';
-import useResults from '../../hooks/useResults';
+import getRealm from '../../services/realm';
+import { apiListAnime, jikanRepository } from '../../services/consts';
 
 const SearchbarComponent = () => {
   
+	const netInfo = useNetInfo();
 	const [search, setSearch] = useState('');
 	const [filteredDataSource, setFilteredDataSource] = useState([]);
 	const [masterDataSource, setMasterDataSource] = useState([]);
 	const [loading, setLoading] = useState(false);
-    const [searchSeasonAnimeApi, results, errorMessage] = useResults();
 
 	useEffect(() => {
-		getListAnime();
-	});
-
-	function getListAnime () {
-		setLoading(true);
-		
-		try {
-			setMasterDataSource(results);
-			setFilteredDataSource(results);
-			setLoading(false);
-		} catch(error) {
-
-			setLoading(false);
-			Alert(errorMessage);
+		async function syncListAnime() {
+			const realm = await getRealm();
+			const animes = realm.objects(jikanRepository);
+			
+			if(netInfo.type == 'wifi' && animes.length == 0) {
+				await getListAnime();
+				const animesList = realm.objects(jikanRepository).sorted('title', true);
+				setFilteredDataSource(animesList);
+				setMasterDataSource(animesList);
+			} else {
+				const animesList = realm.objects(jikanRepository).sorted('title', false);
+				setFilteredDataSource(animesList);
+				setMasterDataSource(animesList);
+			} 
 		}
-	} 
+		syncListAnime();
+	}, []);
+
+	async function getListAnime() {
+		try {
+			const response = await axios.get(apiListAnime);
+			await saveListAnime(response.data.anime);
+		} catch(err) {
+			console.log(err)
+		}
+	}
+
+	async function saveListAnime(animes) {
+		const data = {};
+		const realm = await getRealm();
+		
+		for(let aux = 0; aux < animes.length; aux ++) {
+			if(animes[aux].episodes === null) {
+				animes[aux].episodes = 0;
+			}
+			data['mal_id'] = animes[aux].mal_id;
+			data['title'] = animes[aux].title;
+			data['image_url'] = animes[aux].image_url;
+			data['synopsis'] = animes[aux].synopsis;
+			data['episodes'] = animes[aux].episodes;
+
+			realm.write(() => {
+				realm.create(jikanRepository, data, 'modified');
+			});
+		}
+	}
 
 	const searchFilterFunction = (text) => {
 		if (text) {
@@ -71,7 +104,7 @@ const SearchbarComponent = () => {
 		<SafeAreaView style = {{ flex: 1 }}>
 			<View style = { styles.container }>
 				<Searchbar
-					placeholder = 'Procure Aqui ...'
+					placeholder = 'Procure Aqui '
 					onChangeText={(text) => searchFilterFunction(text)}
 					value = { search }
 				/>
@@ -79,7 +112,6 @@ const SearchbarComponent = () => {
 					data = { filteredDataSource }
 					keyExtractor = { keyExtractor }
 					maxToRenderPerBatch = { 20 }
-					onEndReached = { getListAnime }
 					onEndReachedThreshold = { 0.2 }
 					ListFooterComponent={ renderFooter }
 					renderItem = { renderItem }
@@ -107,8 +139,7 @@ const styles =  StyleSheet.create({
         backgroundColor: '#FFFFFF',
     },
     loading: {
-		top: 240,
-		color: 'red'
+		top: 240
     },
     textLoading: {
         fontSize: 20,
