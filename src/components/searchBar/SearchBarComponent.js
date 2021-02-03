@@ -3,7 +3,7 @@ import { SafeAreaView, View, StyleSheet } from 'react-native';
 import { Searchbar, ActivityIndicator } from 'react-native-paper';
 import { OptimizedFlatList } from 'react-native-optimized-flatlist';
 
-import { syncListAnime } from '../../services/animesRealm';
+import { syncListAnime, getListAnime } from '../../services/animesRealm';
 import DescriptionAnime from '../descriptionAnime/DescriptionAnime';
 
 const SearchbarComponent = () => {
@@ -15,7 +15,10 @@ const SearchbarComponent = () => {
 
 	useEffect(() => {
 		async function syncList() {
-			const animeList = await syncListAnime();
+			await syncListAnime();
+			const animesList = await getListAnime();
+			setFilteredDataSource(animesList);
+			setMasterDataSource(animesList);
 		}
 		
 		syncList();
@@ -68,7 +71,7 @@ const SearchbarComponent = () => {
 					data = { filteredDataSource }
 					keyExtractor = { keyExtractor }
 					maxToRenderPerBatch = { 20 }
-					onEndReachedThreshold = { 0.2 }
+					onEndReachedThreshold = { 0.3 }
 					ListFooterComponent={ renderFooter }
 					renderItem = { renderItem }
 					numColumns = { 2 }

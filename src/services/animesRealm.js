@@ -9,30 +9,34 @@ export async function syncListAnime() {
     const season = currentSeason;
     const realm = await getRealm();
     const animes = realm.objects('JikanRepository');
-
+    
     if(wifi && animes.length == 0) {
-        getListAnimeFromApiJikan();
+        await getListAnimeFromApiJikan();
     } else {
-        
+
     }
 
     if(wifi && apiListAnime.includes(season)) {
 
     } else {
-        await deleteListAnime();
+        await deleteListAnime(animes);
         await getListAnimeFromApiJikan();
     }
 }
 
-async function deleteListAnime() {
+export async function getListAnime() {
     const realm = await getRealm();
-    const animes = realm.objects('JikanRepository');
+    const animes = realm.objects('JikanRepository').sorted('title', false);
+    
+    return animes;
+}
+
+async function deleteListAnime(animes) {
+    const realm = await getRealm();
 
     realm.write(() => {
         realm.delete(animes);
     });
-
-    animes = null;
 }
 
 async function getListAnimeFromApiJikan() {
@@ -54,7 +58,7 @@ async function saveListAnime(animes) {
         }
 
         if(animes[aux].score === null) {
-            animes[aux].score = 0;
+            animes[aux].score = 5;
         }
 
         data['mal_id'] = animes[aux].mal_id;
