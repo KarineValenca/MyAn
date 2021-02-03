@@ -2,75 +2,24 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { SafeAreaView, View, StyleSheet } from 'react-native';
 import { Searchbar, ActivityIndicator } from 'react-native-paper';
 import { OptimizedFlatList } from 'react-native-optimized-flatlist';
-import { useNetInfo } from "@react-native-community/netinfo";
-import axios from 'axios';
 
+import { syncListAnime } from '../../services/animesRealm';
 import DescriptionAnime from '../descriptionAnime/DescriptionAnime';
-import getRealm from '../../services/realm';
-import { apiListAnime } from '../../services/consts';
 
 const SearchbarComponent = () => {
   
-	const netInfo = useNetInfo();
 	const [search, setSearch] = useState('');
 	const [filteredDataSource, setFilteredDataSource] = useState([]);
 	const [masterDataSource, setMasterDataSource] = useState([]);
 	const [loading, setLoading] = useState(false);
 
 	useEffect(() => {
-		async function syncListAnime() {
-			const realm = await getRealm();
-			const animes = realm.objects('JikanRepository');
-			
-			if(netInfo.type == 'wifi' && animes.length == 0) {
-				await getListAnime();
-				const animesList = realm.objects('JikanRepository').sorted('title', false);
-				setFilteredDataSource(animesList);
-				setMasterDataSource(animesList);
-			} else {
-				const animesList = realm.objects('JikanRepository').sorted('title', false);
-				setFilteredDataSource(animesList);
-				setMasterDataSource(animesList);
-			} 
+		async function syncList() {
+			const animeList = await syncListAnime();
 		}
-		syncListAnime();
-	}, []);
-
-	async function getListAnime() {
-		try {
-			const response = await axios.get(apiListAnime);
-			await saveListAnime(response.data.anime);
-		} catch(err) {
-			console.log(err)
-		}
-	}
-
-	async function saveListAnime(animes) {
-		// console.log(animes)
-		// const data = {};
-		// const realm = await getRealm();
 		
-		// for(let aux = 0; aux < animes.length; aux ++) {
-		// 	if(animes[aux].episodes === null) {
-		// 		animes[aux].episodes = 0;
-		// 	}
-
-		// 	if(anime[aux].score === null) {
-		// 		animes[aux].score = 0;
-		// 	}
-
-		// 	data['mal_id'] = animes[aux].mal_id;
-		// 	data['title'] = animes[aux].title;
-		// 	data['image_url'] = animes[aux].image_url;
-		// 	data['synopsis'] = animes[aux].synopsis;
-		// 	data['episodes'] = animes[aux].episodes;
-		// 	data['score'] = animes[aux].score;
-
-		// 	realm.write(() => {
-		// 		realm.create('JikanRepository', data, 'modified');
-		// 	});
-		// }
-	}
+		syncList();
+	}, []);
 
 	const searchFilterFunction = (text) => {
 		if (text) {
