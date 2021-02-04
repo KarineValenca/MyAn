@@ -74,7 +74,7 @@ const SearchbarComponent = () => {
 				/>
 				{
 					loading ? (
-						<View>
+						<View style = { styles.containerLoading }>
 							<Image 
 								source = { require('../../images/loading.gif') } 
 								style = { styles.loadingGif }/>
@@ -113,7 +113,11 @@ const styles =  StyleSheet.create({
         margin: 5,
         borderColor: '#009688',
         backgroundColor: '#FFFFFF',
-    },
+	},
+	containerLoading: {
+		justifyContent: 'center',
+    	alignItems: 'center',
+	},
     textLoading: {
         fontSize: 20,
         textAlign: 'center',
@@ -123,7 +127,6 @@ const styles =  StyleSheet.create({
 	},
 	loadingGif: {
 		top: 50,
-		left: 20,
 		width: 266,
 		height: 258,
 	}
