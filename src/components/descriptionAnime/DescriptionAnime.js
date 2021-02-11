@@ -17,6 +17,7 @@ const DescriptionAnime = ({ item }) => {
 							<Text style = { styles.title }> Title: { item.title } </Text>
 							<Text style = { styles.modalText }> Synopsis: { item.synopsis } </Text>
 							<Text style = { styles.modalText }> Episodes: { item.episodes } </Text>
+							<Text style = { styles.modalText }> Score: { item.score } </Text>
 
 							<TouchableHighlight
 								style={{ ...styles.closeButton }}
